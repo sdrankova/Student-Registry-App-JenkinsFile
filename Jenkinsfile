@@ -9,7 +9,15 @@ pipeline {
         }
         stage('NPM Audit') {
             steps {
-                bat 'npm audit'
+                script {
+                    def auditResult = bat(script: 'npm audit --json', returnStdout: true).trim()
+                    if (auditResult.contains("low") || auditResult.contains("moderate") || auditResult.contains("high")) {
+                        echo "Vulnerabilities found. Fixing..."
+                        bat "npm audit fix"
+                    } else {
+                        echo "No vulnerabilities found."
+                    }
+                }
             }
         }
         stage('Run Integration tests') {
