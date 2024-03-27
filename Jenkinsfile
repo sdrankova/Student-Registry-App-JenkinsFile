@@ -11,7 +11,7 @@ pipeline {
             steps {
                 script {
                     def auditResult = bat(script: 'npm audit --json', returnStdout: true).trim()
-                    if (auditResult.contains("low") || auditResult.contains("moderate") || auditResult.contains("high")) {
+                    if (!auditResult.contains("low") || !auditResult.contains("moderate") || !auditResult.contains("high")) {
                         echo "Vulnerabilities found. Fixing..."
                         bat "npm audit fix"
                     } else {
